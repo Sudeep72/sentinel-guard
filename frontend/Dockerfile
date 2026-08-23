@@ -1,5 +1,5 @@
 # SentinelGuard Web Dashboard (Next.js) — production Dockerfile
-FROM node:20-slim AS builder
+FROM node:26-slim AS builder
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ COPY . .
 RUN npm run build
 
 # ---- runtime stage ----
-FROM node:20-slim
+FROM node:26-slim
 
 WORKDIR /app
 
