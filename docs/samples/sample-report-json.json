@@ -1,0 +1,621 @@
+{
+  "metadata": {
+    "report_type": "sentinelguard_security_report",
+    "generated_at": "2026-08-05T17:53:42.707426+00:00",
+    "sentinelguard_baseline_version": "1.0.0"
+  },
+  "server": {
+    "id": "155833bb-4d2a-40ca-8b51-78014c6efe08",
+    "hostname": "prod-web-01",
+    "distro": "ubuntu",
+    "distro_version": "24.04"
+  },
+  "scan": {
+    "id": "c97183ea-4f6b-42fa-8289-811d6d2824f6",
+    "started_at": "2026-08-05T17:53:34.518230",
+    "completed_at": "2026-08-05T17:53:42.518230",
+    "status": "completed"
+  },
+  "score": {
+    "available": true,
+    "score": {
+      "scan_id": "c97183ea-4f6b-42fa-8289-811d6d2824f6",
+      "overall_score": 93.1,
+      "category_scores": [
+        {
+          "category": "permission",
+          "score": 100.0,
+          "weight": 0.15
+        },
+        {
+          "category": "ownership",
+          "score": 100.0,
+          "weight": 0.02
+        },
+        {
+          "category": "ssh",
+          "score": 85.0,
+          "weight": 0.2
+        },
+        {
+          "category": "sudo",
+          "score": 100.0,
+          "weight": 0.15
+        },
+        {
+          "category": "cron",
+          "score": 100.0,
+          "weight": 0.03
+        },
+        {
+          "category": "secret",
+          "score": 75.0,
+          "weight": 0.15
+        },
+        {
+          "category": "docker",
+          "score": 100.0,
+          "weight": 0.1
+        },
+        {
+          "category": "firewall",
+          "score": 100.0,
+          "weight": 0.15
+        },
+        {
+          "category": "kernel",
+          "score": 97.0,
+          "weight": 0.05
+        }
+      ],
+      "computed_at": "2026-08-05T17:53:42.681967"
+    },
+    "message": null,
+    "total_checks": 66,
+    "passed_checks": 63,
+    "failed_checks": 3,
+    "baseline_version": "1.0.0"
+  },
+  "severity_summary": {
+    "critical": 1,
+    "high": 1,
+    "medium": 0,
+    "low": 1,
+    "info": 0
+  },
+  "findings_by_category": {
+    "ssh": [
+      {
+        "check_id": "SSH-001",
+        "module": "ssh",
+        "title": "SSH root login is permitted",
+        "severity": "high",
+        "description": "PermitRootLogin is set to yes.",
+        "why_it_matters": "Eliminates the audit trail from su/sudo.",
+        "attack_scenario": "Attacker with leaked root password gets a shell directly.",
+        "recommendation": "Set PermitRootLogin no.",
+        "current_value": "yes",
+        "expected_value": "no",
+        "id": "0109f42e-f01d-49aa-949c-8320f79b0dff",
+        "scan_id": "c97183ea-4f6b-42fa-8289-811d6d2824f6",
+        "server_id": "155833bb-4d2a-40ca-8b51-78014c6efe08",
+        "status": "open",
+        "created_at": "2026-08-05T17:53:42.522153"
+      }
+    ],
+    "sudo": [],
+    "permission": [],
+    "secret": [
+      {
+        "check_id": "SECRET-001",
+        "module": "secret",
+        "title": "SSH private key file exposed",
+        "severity": "critical",
+        "description": "Unencrypted key at /root/.ssh/id_rsa.",
+        "why_it_matters": "Anyone with read access can authenticate as root.",
+        "attack_scenario": "Attacker copies the key and authenticates elsewhere.",
+        "recommendation": "chmod 600, rotate the key.",
+        "current_value": "mode=0644",
+        "expected_value": "mode=0600",
+        "id": "2e956806-1eb8-47a3-aa8a-e31fa87de2c9",
+        "scan_id": "c97183ea-4f6b-42fa-8289-811d6d2824f6",
+        "server_id": "155833bb-4d2a-40ca-8b51-78014c6efe08",
+        "status": "open",
+        "created_at": "2026-08-05T17:53:42.522163"
+      }
+    ],
+    "firewall": [],
+    "docker": [],
+    "kernel": [
+      {
+        "check_id": "KERNEL-001",
+        "module": "kernel",
+        "title": "ASLR is not fully enabled",
+        "severity": "low",
+        "description": "kernel.randomize_va_space=1",
+        "why_it_matters": "Reduces exploit mitigation effectiveness.",
+        "attack_scenario": "Predictable memory layout aids overflow exploits.",
+        "recommendation": "sysctl -w kernel.randomize_va_space=2",
+        "current_value": "1",
+        "expected_value": "2",
+        "id": "1caa58e2-cde5-4d60-9118-fccacc7acdb2",
+        "scan_id": "c97183ea-4f6b-42fa-8289-811d6d2824f6",
+        "server_id": "155833bb-4d2a-40ca-8b51-78014c6efe08",
+        "status": "open",
+        "created_at": "2026-08-05T17:53:42.522169"
+      }
+    ],
+    "cron": [],
+    "ownership": []
+  },
+  "baseline_comparison": {
+    "available": true,
+    "server_id": "155833bb-4d2a-40ca-8b51-78014c6efe08",
+    "distro": "ubuntu",
+    "comparisons": [
+      {
+        "category": "permission",
+        "rule": "/etc/shadow",
+        "current_value": null,
+        "expected_value": "0o0640",
+        "matches_baseline": true
+      },
+      {
+        "category": "permission",
+        "rule": "/etc/gshadow",
+        "current_value": null,
+        "expected_value": "0o0640",
+        "matches_baseline": true
+      },
+      {
+        "category": "permission",
+        "rule": "/etc/passwd",
+        "current_value": null,
+        "expected_value": "0o0644",
+        "matches_baseline": true
+      },
+      {
+        "category": "permission",
+        "rule": "/etc/group",
+        "current_value": null,
+        "expected_value": "0o0644",
+        "matches_baseline": true
+      },
+      {
+        "category": "permission",
+        "rule": "/etc/sudoers",
+        "current_value": null,
+        "expected_value": "0o0440",
+        "matches_baseline": true
+      },
+      {
+        "category": "permission",
+        "rule": "/etc/ssh/sshd_config",
+        "current_value": null,
+        "expected_value": "0o0600",
+        "matches_baseline": true
+      },
+      {
+        "category": "permission",
+        "rule": "/boot",
+        "current_value": null,
+        "expected_value": "0o0700",
+        "matches_baseline": true
+      },
+      {
+        "category": "permission",
+        "rule": "/root",
+        "current_value": null,
+        "expected_value": "0o0700",
+        "matches_baseline": true
+      },
+      {
+        "category": "ownership",
+        "rule": "/etc/shadow",
+        "current_value": null,
+        "expected_value": "uid=0, gid=42",
+        "matches_baseline": true
+      },
+      {
+        "category": "ownership",
+        "rule": "/etc/passwd",
+        "current_value": null,
+        "expected_value": "uid=0, gid=0",
+        "matches_baseline": true
+      },
+      {
+        "category": "ownership",
+        "rule": "/etc/sudoers",
+        "current_value": null,
+        "expected_value": "uid=0, gid=0",
+        "matches_baseline": true
+      },
+      {
+        "category": "ownership",
+        "rule": "/etc/ssh/sshd_config",
+        "current_value": null,
+        "expected_value": "uid=0, gid=0",
+        "matches_baseline": true
+      },
+      {
+        "category": "ssh",
+        "rule": "PermitRootLogin",
+        "current_value": "yes",
+        "expected_value": "no",
+        "matches_baseline": false
+      },
+      {
+        "category": "ssh",
+        "rule": "PasswordAuthentication",
+        "current_value": null,
+        "expected_value": "no",
+        "matches_baseline": true
+      },
+      {
+        "category": "ssh",
+        "rule": "PermitEmptyPasswords",
+        "current_value": null,
+        "expected_value": "no",
+        "matches_baseline": true
+      },
+      {
+        "category": "ssh",
+        "rule": "PubkeyAuthentication",
+        "current_value": null,
+        "expected_value": "yes",
+        "matches_baseline": true
+      },
+      {
+        "category": "ssh",
+        "rule": "Protocol",
+        "current_value": null,
+        "expected_value": "2",
+        "matches_baseline": true
+      },
+      {
+        "category": "ssh",
+        "rule": "X11Forwarding",
+        "current_value": null,
+        "expected_value": "no",
+        "matches_baseline": true
+      },
+      {
+        "category": "ssh",
+        "rule": "MaxAuthTries",
+        "current_value": null,
+        "expected_value": "4",
+        "matches_baseline": true
+      },
+      {
+        "category": "ssh",
+        "rule": "ClientAliveInterval",
+        "current_value": null,
+        "expected_value": "300",
+        "matches_baseline": true
+      },
+      {
+        "category": "ssh",
+        "rule": "ClientAliveCountMax",
+        "current_value": null,
+        "expected_value": "2",
+        "matches_baseline": true
+      },
+      {
+        "category": "sudo",
+        "rule": "sudoers_permissions",
+        "current_value": null,
+        "expected_value": "no insecure permissions",
+        "matches_baseline": true
+      },
+      {
+        "category": "sudo",
+        "rule": "writable_sudoers",
+        "current_value": null,
+        "expected_value": "not world-writable",
+        "matches_baseline": true
+      },
+      {
+        "category": "sudo",
+        "rule": "nopasswd_rules",
+        "current_value": null,
+        "expected_value": "no NOPASSWD rules",
+        "matches_baseline": true
+      },
+      {
+        "category": "sudo",
+        "rule": "all_all_rules",
+        "current_value": null,
+        "expected_value": "no ALL=(ALL) ALL rules",
+        "matches_baseline": true
+      },
+      {
+        "category": "sudo",
+        "rule": "dangerous_commands",
+        "current_value": null,
+        "expected_value": "no shell-escapable commands",
+        "matches_baseline": true
+      },
+      {
+        "category": "cron",
+        "rule": "cron_directory_permissions",
+        "current_value": null,
+        "expected_value": "0755 for dirs, 0644 for /etc/crontab",
+        "matches_baseline": true
+      },
+      {
+        "category": "cron",
+        "rule": "world_writable_cron_files",
+        "current_value": null,
+        "expected_value": "no world-writable cron files",
+        "matches_baseline": true
+      },
+      {
+        "category": "cron",
+        "rule": "world_writable_cron_scripts",
+        "current_value": null,
+        "expected_value": "no world-writable scripts referenced in crontab",
+        "matches_baseline": true
+      },
+      {
+        "category": "cron",
+        "rule": "spool_permissions",
+        "current_value": null,
+        "expected_value": "0700 for cron/at spool dirs",
+        "matches_baseline": true
+      },
+      {
+        "category": "secret",
+        "rule": "ssh_private_keys",
+        "current_value": "secret detected",
+        "expected_value": "no unprotected SSH private keys",
+        "matches_baseline": false
+      },
+      {
+        "category": "secret",
+        "rule": "env_file_secrets",
+        "current_value": null,
+        "expected_value": "no secrets in .env files",
+        "matches_baseline": true
+      },
+      {
+        "category": "secret",
+        "rule": "plaintext_credentials",
+        "current_value": null,
+        "expected_value": "no credentials in plaintext files",
+        "matches_baseline": true
+      },
+      {
+        "category": "docker",
+        "rule": "socket_world_writable",
+        "current_value": null,
+        "expected_value": "not world-writable",
+        "matches_baseline": true
+      },
+      {
+        "category": "docker",
+        "rule": "socket_group_ownership",
+        "current_value": null,
+        "expected_value": "group=docker",
+        "matches_baseline": true
+      },
+      {
+        "category": "docker",
+        "rule": "tcp_socket_exposure",
+        "current_value": null,
+        "expected_value": "no TCP socket without TLS",
+        "matches_baseline": true
+      },
+      {
+        "category": "docker",
+        "rule": "no_new_privileges",
+        "current_value": null,
+        "expected_value": "true",
+        "matches_baseline": true
+      },
+      {
+        "category": "docker",
+        "rule": "userland_proxy",
+        "current_value": null,
+        "expected_value": "false",
+        "matches_baseline": true
+      },
+      {
+        "category": "docker",
+        "rule": "privileged_containers",
+        "current_value": null,
+        "expected_value": "no privileged containers",
+        "matches_baseline": true
+      },
+      {
+        "category": "docker",
+        "rule": "host_pid_namespace",
+        "current_value": null,
+        "expected_value": "isolated",
+        "matches_baseline": true
+      },
+      {
+        "category": "docker",
+        "rule": "host_network_namespace",
+        "current_value": null,
+        "expected_value": "isolated",
+        "matches_baseline": true
+      },
+      {
+        "category": "docker",
+        "rule": "host_ipc_namespace",
+        "current_value": null,
+        "expected_value": "isolated",
+        "matches_baseline": true
+      },
+      {
+        "category": "docker",
+        "rule": "dangerous_capabilities",
+        "current_value": null,
+        "expected_value": "no dangerous capabilities",
+        "matches_baseline": true
+      },
+      {
+        "category": "docker",
+        "rule": "root_containers",
+        "current_value": null,
+        "expected_value": "non-root user",
+        "matches_baseline": true
+      },
+      {
+        "category": "docker",
+        "rule": "dangerous_host_mounts",
+        "current_value": null,
+        "expected_value": "no sensitive host mounts",
+        "matches_baseline": true
+      },
+      {
+        "category": "docker",
+        "rule": "latest_tag",
+        "current_value": null,
+        "expected_value": "pinned version tag",
+        "matches_baseline": true
+      },
+      {
+        "category": "firewall",
+        "rule": "no_firewall_active",
+        "current_value": null,
+        "expected_value": "active firewall",
+        "matches_baseline": true
+      },
+      {
+        "category": "firewall",
+        "rule": "default_input_policy",
+        "current_value": null,
+        "expected_value": "DROP",
+        "matches_baseline": true
+      },
+      {
+        "category": "firewall",
+        "rule": "default_forward_policy",
+        "current_value": null,
+        "expected_value": "DROP",
+        "matches_baseline": true
+      },
+      {
+        "category": "firewall",
+        "rule": "ssh_exposure",
+        "current_value": null,
+        "expected_value": "SSH restricted to trusted IPs",
+        "matches_baseline": true
+      },
+      {
+        "category": "firewall",
+        "rule": "dangerous_ports_open",
+        "current_value": null,
+        "expected_value": "no dangerous ports exposed",
+        "matches_baseline": true
+      },
+      {
+        "category": "firewall",
+        "rule": "ufw_inactive",
+        "current_value": null,
+        "expected_value": "active",
+        "matches_baseline": true
+      },
+      {
+        "category": "firewall",
+        "rule": "firewalld_inactive",
+        "current_value": null,
+        "expected_value": "active",
+        "matches_baseline": true
+      },
+      {
+        "category": "kernel",
+        "rule": "kernel.randomize_va_space",
+        "current_value": "1",
+        "expected_value": "2",
+        "matches_baseline": false
+      },
+      {
+        "category": "kernel",
+        "rule": "kernel.yama.ptrace_scope",
+        "current_value": null,
+        "expected_value": "1",
+        "matches_baseline": true
+      },
+      {
+        "category": "kernel",
+        "rule": "fs.suid_dumpable",
+        "current_value": null,
+        "expected_value": "0",
+        "matches_baseline": true
+      },
+      {
+        "category": "kernel",
+        "rule": "kernel.dmesg_restrict",
+        "current_value": null,
+        "expected_value": "1",
+        "matches_baseline": true
+      },
+      {
+        "category": "kernel",
+        "rule": "kernel.kexec_load_disabled",
+        "current_value": null,
+        "expected_value": "1",
+        "matches_baseline": true
+      },
+      {
+        "category": "kernel",
+        "rule": "net.ipv4.ip_forward",
+        "current_value": null,
+        "expected_value": "0",
+        "matches_baseline": true
+      },
+      {
+        "category": "kernel",
+        "rule": "net.ipv4.tcp_syncookies",
+        "current_value": null,
+        "expected_value": "1",
+        "matches_baseline": true
+      },
+      {
+        "category": "kernel",
+        "rule": "net.ipv4.conf.all.accept_redirects",
+        "current_value": null,
+        "expected_value": "0",
+        "matches_baseline": true
+      },
+      {
+        "category": "kernel",
+        "rule": "net.ipv4.conf.all.accept_source_route",
+        "current_value": null,
+        "expected_value": "0",
+        "matches_baseline": true
+      },
+      {
+        "category": "kernel",
+        "rule": "net.ipv6.conf.all.accept_ra",
+        "current_value": null,
+        "expected_value": "0",
+        "matches_baseline": true
+      },
+      {
+        "category": "kernel",
+        "rule": "kernel.kptr_restrict",
+        "current_value": null,
+        "expected_value": "2",
+        "matches_baseline": true
+      },
+      {
+        "category": "kernel",
+        "rule": "kernel.unprivileged_bpf_disabled",
+        "current_value": null,
+        "expected_value": "1",
+        "matches_baseline": true
+      },
+      {
+        "category": "kernel",
+        "rule": "kernel_version",
+        "current_value": null,
+        "expected_value": ">=4.14",
+        "matches_baseline": true
+      }
+    ],
+    "message": null
+  }
+}

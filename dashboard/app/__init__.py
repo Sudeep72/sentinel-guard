@@ -1,0 +1,1 @@
+"""SentinelGuard Dashboard application package."""

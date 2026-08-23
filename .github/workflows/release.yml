@@ -1,0 +1,47 @@
+name: Release
+
+# Triggered by pushing a semver tag, e.g. v1.0.0-alpha.1
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build-artifacts:
+    name: Build release artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Derive release notes from CHANGELOG.md
+        run: |
+          echo "Release notes extraction runs against the '[Unreleased]' \
+          section header in CHANGELOG.md once release automation lands."
+
+      # Placeholder build steps — these become real once Docker images
+      # exist for agent/ and dashboard/ (later phases). Kept as an
+      # explicit no-op job rather than omitted, so the release workflow
+      # shape is visible from day one.
+      - name: Build placeholder
+        run: |
+          echo "No buildable artifacts yet. This job will build and"
+          echo "publish agent + dashboard container images once their"
+          echo "Dockerfiles are implemented."
+
+  create-github-release:
+    name: Create GitHub Release
+    needs: build-artifacts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          draft: true
+          prerelease: true

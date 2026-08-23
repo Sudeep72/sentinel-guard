@@ -1,0 +1,57 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# --- SQLite / local data ---
+*.db
+*.sqlite3
+dashboard/app/*.db
+
+# --- Environment / secrets ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+!agent/tests/**/*.key
+!dashboard/tests/**/*.key
+
+# --- Node / Next.js ---
+node_modules/
+.next/
+out/
+frontend/.next/
+frontend/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Build artifacts ---
+dist/
+build/
+*.egg
+
+# --- IDE / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Alembic (keep migration scripts, ignore generated cache) ---
+dashboard/app/db/migrations/__pycache__/
+
+# --- Docker ---
+*.log

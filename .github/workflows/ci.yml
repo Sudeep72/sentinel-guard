@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  python-quality:
+    name: Python lint, type-check, test (${{ matrix.package }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: [contracts, agent, dashboard]
+    defaults:
+      run:
+        working-directory: ${{ matrix.package }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Check for pyproject.toml
+        id: check_pkg
+        run: |
+          if [ -f "pyproject.toml" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install shared contracts package (agent/dashboard only)
+        if: steps.check_pkg.outputs.exists == 'true' && matrix.package != 'contracts'
+        run: pip install -e ../contracts
+
+      - name: Install dependencies
+        if: steps.check_pkg.outputs.exists == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Ruff
+        if: steps.check_pkg.outputs.exists == 'true'
+        run: ruff check .
+
+      - name: Black (check only)
+        if: steps.check_pkg.outputs.exists == 'true'
+        run: black --check .
+
+      - name: MyPy
+        if: steps.check_pkg.outputs.exists == 'true'
+        run: mypy .
+
+      - name: Pytest
+        if: steps.check_pkg.outputs.exists == 'true'
+        run: pytest --cov --cov-report=term-missing
+
+      - name: No pyproject.toml yet
+        if: steps.check_pkg.outputs.exists == 'false'
+        run: echo "Skipping — ${{ matrix.package }}/pyproject.toml not yet added (upcoming phase)."
+
+  frontend-quality:
+    name: Frontend lint & build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for package.json
+        id: check_pkg
+        run: |
+          if [ -f "package.json" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Node
+        if: steps.check_pkg.outputs.exists == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        if: steps.check_pkg.outputs.exists == 'true'
+        run: npm ci
+
+      - name: Lint
+        if: steps.check_pkg.outputs.exists == 'true'
+        run: npm run lint
+
+      - name: Build
+        if: steps.check_pkg.outputs.exists == 'true'
+        run: npm run build
+
+      - name: No package.json yet
+        if: steps.check_pkg.outputs.exists == 'false'
+        run: echo "Skipping — frontend/package.json not yet added (Phase 20)."

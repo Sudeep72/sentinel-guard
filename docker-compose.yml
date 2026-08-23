@@ -1,0 +1,59 @@
+# SentinelGuard — local development stack
+#
+# All three services (dashboard, frontend, agent) have real Dockerfiles.
+# `docker compose up` builds a working dashboard API + Next.js frontend;
+# run `docker compose --profile agent-dev up` to also build the optional
+# containerized agent (agents typically run natively on monitored hosts
+# instead — see agent/Dockerfile notes).
+#
+# IMPORTANT: dashboard and agent build contexts are the REPOSITORY ROOT
+# (not their own subdirectory), because both depend on the sibling
+# contracts/ package and Docker cannot COPY from outside its build
+# context. Build/run from the repo root:
+#   docker compose up --build
+#
+# The dashboard's CMD runs `alembic upgrade head` before starting
+# uvicorn — set SENTINELGUARD_DATABASE_URL and SENTINELGUARD_JWT_SECRET_KEY
+# via a real .env file for anything beyond local development.
+
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: dashboard/Dockerfile
+    container_name: sentinelguard-dashboard
+    env_file:
+      - ./dashboard/.env.example
+    ports:
+      - "8000:8000"
+    volumes:
+      - dashboard-data:/app/data
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sentinelguard-frontend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - dashboard
+    restart: unless-stopped
+
+  agent:
+    build:
+      context: .
+      dockerfile: agent/Dockerfile
+    container_name: sentinelguard-agent
+    environment:
+      - SENTINELGUARD_DASHBOARD_URL=http://dashboard:8000
+    depends_on:
+      - dashboard
+    profiles:
+      - agent-dev
+
+volumes:
+  dashboard-data:

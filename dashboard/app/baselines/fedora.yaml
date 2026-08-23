@@ -1,0 +1,270 @@
+# SentinelGuard — Fedora/Rocky/CentOS security baseline
+# RHEL-family distros share the same baseline values.
+# Key difference from Debian/Ubuntu: shadow group gid is typically 0.
+
+version: "1.0.0"
+
+permission:
+  /etc/shadow:
+    expected: "0o0000"
+    severity: critical
+    description: "shadow file must be mode 000 (root read only via DAC_READ_SEARCH)"
+  /etc/gshadow:
+    expected: "0o0000"
+    severity: critical
+    description: "gshadow file must be mode 000"
+  /etc/passwd:
+    expected: "0o0644"
+    severity: medium
+    description: "passwd must be world-readable but not writable"
+  /etc/group:
+    expected: "0o0644"
+    severity: medium
+    description: "group file must be world-readable but not writable"
+  /etc/sudoers:
+    expected: "0o0440"
+    severity: high
+    description: "sudoers must be read-only by root"
+  /etc/ssh/sshd_config:
+    expected: "0o0600"
+    severity: high
+    description: "sshd_config must not be world-readable"
+  /boot:
+    expected: "0o0700"
+    severity: high
+    description: "boot directory must not be world-accessible"
+  /root:
+    expected: "0o0700"
+    severity: high
+    description: "root home must not be world-accessible"
+
+ownership:
+  /etc/shadow:
+    expected_uid: 0
+    expected_gid: 0
+    severity: critical
+  /etc/passwd:
+    expected_uid: 0
+    expected_gid: 0
+    severity: high
+  /etc/sudoers:
+    expected_uid: 0
+    expected_gid: 0
+    severity: high
+  /etc/ssh/sshd_config:
+    expected_uid: 0
+    expected_gid: 0
+    severity: high
+
+ssh:
+  PermitRootLogin:
+    expected: "no"
+    severity: high
+    description: "Direct root login over SSH must be disabled"
+  PasswordAuthentication:
+    expected: "no"
+    severity: high
+    description: "Password authentication must be disabled"
+  PermitEmptyPasswords:
+    expected: "no"
+    severity: critical
+    description: "Empty password logins must never be permitted"
+  PubkeyAuthentication:
+    expected: "yes"
+    severity: medium
+    description: "Public key authentication must be enabled"
+  Protocol:
+    expected: "2"
+    severity: critical
+    description: "Only SSH Protocol 2 must be used"
+
+sudo:
+  sudoers_permissions:
+    expected: "no insecure permissions"
+    severity: high
+    description: "sudoers files must be mode 0440, owned root:root"
+  writable_sudoers:
+    expected: "not world-writable"
+    severity: critical
+    description: "sudoers files must never be world-writable"
+  nopasswd_rules:
+    expected: "no NOPASSWD rules"
+    severity: high
+    description: "NOPASSWD sudo rules allow passwordless privilege escalation"
+  all_all_rules:
+    expected: "no ALL=(ALL) ALL rules"
+    severity: high
+    description: "Unrestricted ALL=(ALL) ALL grants full root access"
+  dangerous_commands:
+    expected: "no shell-escapable commands"
+    severity: high
+    description: "Commands like vim, python, bash allow sudo shell escape"
+
+cron:
+  cron_directory_permissions:
+    expected: "0755 for dirs, 0644 for /etc/crontab"
+    severity: medium
+    description: "Cron directories must not be world-writable"
+  world_writable_cron_files:
+    expected: "no world-writable cron files"
+    severity: critical
+    description: "World-writable cron files allow arbitrary root code injection"
+  world_writable_cron_scripts:
+    expected: "no world-writable scripts referenced in crontab"
+    severity: critical
+    description: "Scripts run by root crontab must not be world-writable"
+  spool_permissions:
+    expected: "0700 for cron/at spool dirs"
+    severity: medium
+    description: "Spool directories must not be readable by other users"
+
+secret:
+  ssh_private_keys:
+    expected: "no unprotected SSH private keys"
+    severity: critical
+    description: "SSH private key files must be mode 600, not world-readable"
+  env_file_secrets:
+    expected: "no secrets in .env files"
+    severity: high
+    description: ".env files with credentials must be restricted (mode 600)"
+  plaintext_credentials:
+    expected: "no credentials in plaintext files"
+    severity: high
+    description: "Cloud keys, tokens, passwords must not be stored in plaintext"
+docker:
+  socket_world_writable:
+    expected: "not world-writable"
+    severity: critical
+    description: "Docker socket must not be world-writable"
+  socket_group_ownership:
+    expected: "group=docker"
+    severity: high
+    description: "Docker socket must be owned by the docker group"
+  tcp_socket_exposure:
+    expected: "no TCP socket without TLS"
+    severity: critical
+    description: "Docker TCP socket exposure without TLS is a remote RCE"
+  no_new_privileges:
+    expected: "true"
+    severity: medium
+    description: "no-new-privileges should be enforced daemon-wide"
+  userland_proxy:
+    expected: "false"
+    severity: low
+    description: "Userland proxy should be disabled"
+  privileged_containers:
+    expected: "no privileged containers"
+    severity: critical
+    description: "Privileged containers have full host access"
+  host_pid_namespace:
+    expected: "isolated"
+    severity: high
+    description: "Containers must not share host PID namespace"
+  host_network_namespace:
+    expected: "isolated"
+    severity: high
+    description: "Containers must not share host network namespace"
+  host_ipc_namespace:
+    expected: "isolated"
+    severity: high
+    description: "Containers must not share host IPC namespace"
+  dangerous_capabilities:
+    expected: "no dangerous capabilities"
+    severity: high
+    description: "SYS_ADMIN and similar capabilities must not be granted"
+  root_containers:
+    expected: "non-root user"
+    severity: high
+    description: "Containers must not run as root"
+  dangerous_host_mounts:
+    expected: "no sensitive host mounts"
+    severity: critical
+    description: "Sensitive host directories must not be bind-mounted"
+  latest_tag:
+    expected: "pinned version tag"
+    severity: low
+    description: "Container images should use pinned version tags"
+
+firewall:
+  no_firewall_active:
+    expected: "active firewall"
+    severity: critical
+    description: "A firewall must be active and enforcing"
+  default_input_policy:
+    expected: "DROP"
+    severity: high
+    description: "Default INPUT policy must be DROP or REJECT"
+  default_forward_policy:
+    expected: "DROP"
+    severity: medium
+    description: "Default FORWARD policy must be DROP or REJECT"
+  ssh_exposure:
+    expected: "SSH restricted to trusted IPs"
+    severity: medium
+    description: "SSH should not be open to all source addresses"
+  dangerous_ports_open:
+    expected: "no dangerous ports exposed"
+    severity: high
+    description: "Database and management ports must be restricted"
+  ufw_inactive:
+    expected: "active"
+    severity: high
+    description: "UFW must be active on Ubuntu/Debian systems"
+  firewalld_inactive:
+    expected: "active"
+    severity: high
+    description: "firewalld must be active on RHEL-family systems"
+
+kernel:
+  kernel.randomize_va_space:
+    expected: "2"
+    severity: high
+    description: "ASLR must be fully enabled (value=2)"
+  kernel.yama.ptrace_scope:
+    expected: "1"
+    severity: medium
+    description: "ptrace must be restricted to parent processes"
+  fs.suid_dumpable:
+    expected: "0"
+    severity: medium
+    description: "setuid core dumps must be disabled"
+  kernel.dmesg_restrict:
+    expected: "1"
+    severity: low
+    description: "dmesg must be restricted to privileged users"
+  kernel.kexec_load_disabled:
+    expected: "1"
+    severity: medium
+    description: "kexec must be disabled to protect measured boot"
+  net.ipv4.ip_forward:
+    expected: "0"
+    severity: low
+    description: "IP forwarding should be disabled on non-router hosts"
+  net.ipv4.tcp_syncookies:
+    expected: "1"
+    severity: high
+    description: "SYN flood protection must be enabled"
+  net.ipv4.conf.all.accept_redirects:
+    expected: "0"
+    severity: medium
+    description: "ICMP redirect acceptance must be disabled"
+  net.ipv4.conf.all.accept_source_route:
+    expected: "0"
+    severity: medium
+    description: "Source routing must be disabled"
+  net.ipv6.conf.all.accept_ra:
+    expected: "0"
+    severity: low
+    description: "IPv6 RA acceptance should be disabled"
+  kernel.kptr_restrict:
+    expected: "2"
+    severity: medium
+    description: "Kernel pointers must be hidden from unprivileged users"
+  kernel.unprivileged_bpf_disabled:
+    expected: "1"
+    severity: medium
+    description: "Unprivileged BPF access must be disabled"
+  kernel_version:
+    expected: ">=4.14"
+    severity: high
+    description: "Kernel must be a supported version receiving security patches"

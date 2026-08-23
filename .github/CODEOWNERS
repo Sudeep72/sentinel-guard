@@ -1,0 +1,13 @@
+# CODEOWNERS
+# These owners are requested for review on PRs touching the matching paths.
+# Replace @sentinelguard-maintainers with real GitHub usernames/teams as the
+# maintainer group is established.
+
+*                       @sentinelguard-maintainers
+
+/agent/                 @sentinelguard-maintainers
+/dashboard/             @sentinelguard-maintainers
+/frontend/              @sentinelguard-maintainers
+/dashboard/app/baselines/  @sentinelguard-maintainers
+/.github/               @sentinelguard-maintainers
+SECURITY.md             @sentinelguard-maintainers
