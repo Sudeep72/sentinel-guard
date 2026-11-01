@@ -5,7 +5,7 @@
 # `context: .` and `dockerfile: dashboard/Dockerfile` for this service —
 # Docker cannot COPY from outside its build context, so this Dockerfile
 # cannot be built with `docker build ./dashboard` alone.
-FROM python:3.12-slim AS builder
+FROM python:3.15-slim AS builder
 
 WORKDIR /build
 
@@ -19,7 +19,7 @@ WORKDIR /build/dashboard
 RUN pip install --no-cache-dir .
 
 # ---- runtime stage ----
-FROM python:3.12-slim
+FROM python:3.15-slim
 
 WORKDIR /app
 
